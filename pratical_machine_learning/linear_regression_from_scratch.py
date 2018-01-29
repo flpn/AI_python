@@ -1,3 +1,4 @@
+import random
 from statistics import mean
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,8 +10,22 @@ style.use('fivethirtyeight')
 # m -> best fit slope
 # b -> y intercept
 
-xs = np.array([1, 2, 3, 4, 5, 6], dtype=np.float64)
-ys = np.array([5, 4, 6, 5, 6, 7], dtype=np.float64)
+
+def create_data_set(quantity, variance, step=2, correlation='pos'):
+    value = 1
+    ys = []
+    xs = [i for i in range(quantity)]
+
+    for i in range(quantity):
+        y = value + random.randrange(-variance, variance)
+        ys.append(y)
+
+        if correlation == 'pos':
+            value += step
+        elif correlation == 'neg':
+            value -= step
+
+    return np.array(xs, dtype=np.float64), np.array(ys, dtype=np.float64)
 
 
 def best_fit_slope_and_intercept(xs, ys):
@@ -35,6 +50,8 @@ def coefficient_of_determination(ys_original, ys_line):
 
     return 1 - (squared_error_regression / squared_error_y_mean)
 
+
+xs, ys = create_data_set(100, 30)
 
 m, b = best_fit_slope_and_intercept(xs, ys)
 regression_line = [m * x + b for x in xs]
