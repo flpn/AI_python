@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn import neighbors
 
 
-data_set = pd.read_csv('breast-cancer-wisconsin.txt')
+data_set = pd.read_csv('../data_sets/breast-cancer-wisconsin.txt')
 data_set.replace('?', -99999, inplace=True)
 data_set.drop('id', 1, inplace=True)
 
@@ -21,4 +21,5 @@ example_measures = np.array([[4, 2, 1, 1, 1, 2, 3, 2, 1], [4, 2, 1, 1, 1, 2, 3, 
 example_measures = example_measures.reshape(len(example_measures), -1)
 prediction = classifier.predict(example_measures)
 
+print(accuracy)
 print(prediction)

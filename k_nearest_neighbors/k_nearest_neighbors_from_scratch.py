@@ -22,7 +22,7 @@ def k_nearest_neighbors(data_set, predict, k=3):
     return vote_result
 
 
-data_frame = pd.read_csv('breast-cancer-wisconsin.txt')
+data_frame = pd.read_csv('../data_sets/breast-cancer-wisconsin.txt')
 data_frame.replace('?', -99999, inplace=True)
 data_frame.drop('id', 1, inplace=True)
 
