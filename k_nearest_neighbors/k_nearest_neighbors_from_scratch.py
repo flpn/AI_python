@@ -1,11 +1,8 @@
+import random
 import warnings
 from collections import Counter
 import numpy as np
-from matplotlib import style
-import matplotlib.pyplot as plt
-
-
-style.use('fivethirtyeight')
+import pandas as pd
 
 
 def k_nearest_neighbors(data_set, predict, k=3):
@@ -25,11 +22,34 @@ def k_nearest_neighbors(data_set, predict, k=3):
     return vote_result
 
 
-data_set = {'k': [[1, 2], [2, 3], [3, 1]], 'r': [[6, 5], [7, 7], [8, 6]]}
-new_features = [5, 7]
+data_frame = pd.read_csv('breast-cancer-wisconsin.txt')
+data_frame.replace('?', -99999, inplace=True)
+data_frame.drop('id', 1, inplace=True)
 
-result = k_nearest_neighbors(data_set, new_features)
+full_data = data_frame.astype(float).values.tolist()
 
-[[plt.scatter(feature[0], feature[1], color=group) for feature in data_set[group]] for group in data_set]
-plt.scatter(new_features[0], new_features[1], color=result)
-plt.show()
+random.shuffle(full_data)
+test_size = 0.2
+train_set = {2: [], 4: []}
+test_set = {2: [], 4: []}
+train_data = full_data[:-int(test_size * len(full_data))]
+test_data = full_data[-int(test_size * len(full_data)):]
+
+for i in train_data:
+    train_set[i[-1]].append(i[:-1])
+
+for i in test_data:
+    test_set[i[-1]].append(i[:-1])
+
+correct = total = 0
+
+for group in test_set:
+    for data in test_set[group]:
+        vote = k_nearest_neighbors(train_set, data, 5)
+
+        if group == vote:
+            correct += 1
+
+        total += 1
+
+print(correct / total)
