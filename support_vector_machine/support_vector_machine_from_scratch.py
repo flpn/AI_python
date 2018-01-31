@@ -93,7 +93,7 @@ class SupportVectorMachine:
         return None, None
     
     def visualize(self):
-        [[self.ax.scatter(x[0], x[1], s=100, color=self.colors[i]) for x in data_dict[i]] for i in data_dict]
+        [[self.ax.scatter(x[0], x[1], s=100, color=self.colors[i]) for x in self.data[i]] for i in self.data]
 
         def hyperplane(x, w, b, v):
             return (-w[0]*x-b+v) / w[1]
