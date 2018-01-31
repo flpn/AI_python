@@ -66,7 +66,7 @@ class SupportVectorMachine:
                     optimized = True
                     print('Optimized a step')
                 else:
-                    w -= step
+                    w = w - step
 
             norms = sorted([n for n in opt_dict])
             opt_choice = opt_dict[norms[0]]
@@ -77,16 +77,55 @@ class SupportVectorMachine:
     def predict(self, features):
         # sign(x.w + b)
         classification = np.sign(np.dot(np.array(features), self.w) + self.b)
+        
+        if classification != 0 and self.visualization:
+            self.ax.scatter(features[0], features[1], s=200, marker='*', c=self.colors[classification])
+        else:
+            print('feature_set {} is on the decision boundary'.format(features))
 
         return classification
 
     def is_visual(self):
         if self.visualization:
-            return plt.figure(), self.fig.add_subplot(1, 1, 1)
+            fig = plt.figure()
+            return fig, fig.add_subplot(1, 1, 1)
 
         return None, None
+    
+    def visualize(self):
+        [[self.ax.scatter(x[0], x[1], s=100, color=self.colors[i]) for x in data_dict[i]] for i in data_dict]
+
+        def hyperplane(x, w, b, v):
+            return (-w[0]*x-b+v) / w[1]
+
+        hyp_x_min = self.min_feature_value*0.9
+        hyp_x_max = self.max_feature_value*1.1
+
+        psv1 = hyperplane(hyp_x_min, self.w, self.b, 1)
+        psv2 = hyperplane(hyp_x_max, self.w, self.b, 1)
+        self.ax.plot([hyp_x_min, hyp_x_max], [psv1, psv2], 'k')
+
+        nsv1 = hyperplane(hyp_x_min, self.w, self.b, -1)
+        nsv2 = hyperplane(hyp_x_max, self.w, self.b, -1)
+        self.ax.plot([hyp_x_min, hyp_x_max], [nsv1, nsv2], 'k')
+
+        db1 = hyperplane(hyp_x_min, self.w, self.b, 0)
+        db2 = hyperplane(hyp_x_max, self.w, self.b, 0)
+        self.ax.plot([hyp_x_min, hyp_x_max], [db1, db2], 'y--')
+
+        plt.show()
 
 
 data_dict = {
     -1: np.array([[1, 7], [2, 8], [3, 8], ]),
     1: np.array([[5, 1], [6, -1], [7, 3], ])}
+
+predict_us = [[0, 10], [1, 3], [3, 4], [3, 5], [5, 5], [5, 6], [6, -5], [5, 8]]
+
+svm = SupportVectorMachine()
+svm.fit(data_dict)
+
+for prediction in predict_us:
+    svm.predict(prediction)
+
+svm.visualize()
