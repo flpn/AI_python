@@ -36,7 +36,31 @@ def neural_network_model(data):
 
 
 def train_neural_network(data):
-    pass
+    prediction = neural_network_model(data)
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y))
+    optimizer = tf.train.AdamOptimizer().minimize(cost)
+
+    total_epochs = 10
+
+    with tf.Session() as sess:
+        # Beginning of train
+        sess.run(tf.global_variables_initializer())
+
+        for epoch in range(total_epochs):
+            epoch_loss = 0
+
+            for _ in range(int(mnist.train.num_examples / BATCH_SIZE)):
+                epoch_x, epoch_y = mnist.train.next_batch(BATCH_SIZE)
+                _, epoch_cost = sess.run([optimizer, cost], feed_dict={data: epoch_x, y: epoch_y})
+                epoch_loss += epoch_cost
+
+            print('{}/{} epochs completed! Loss: {}'.format(epoch + 1, total_epochs, epoch_loss))
+            # End of train
+
+        correct = tf.equal(tf.arg_max(prediction, 1), tf.arg_max(y, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
+
+        print('Accuracy: ', accuracy.eval({data: mnist.test.images, y: mnist.test.labels}))
 
 
 mnist = input_data.read_data_sets('/tmp/data/', one_hot=True)
@@ -44,3 +68,4 @@ mnist = input_data.read_data_sets('/tmp/data/', one_hot=True)
 X = tf.placeholder('float', [None, 784])  # images in the data set are 28x28
 y = tf.placeholder('float')
 
+train_neural_network(X)
